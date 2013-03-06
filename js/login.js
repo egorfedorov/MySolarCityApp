@@ -31,6 +31,7 @@
                         $('#dismissAlert').trigger('click');
                         if ($('#rememberMeCheckbox').prop('checked')) {
                             $.cookie('username', e, { expires: 365, path: '/' });
+                            $.cookie('password', p, { expires: 365, path: '/' });
                         }
                         window.location.href = "chart.htm";
                     } else {

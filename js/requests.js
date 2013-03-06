@@ -18,7 +18,7 @@
     });
 
     amplify.request.define('ajaxGetPVChart', 'ajax', {
-        url: 'http://faguinaldo-ld/webapi/Preview/Api/V1/PVGraph?email={email}&password={password}&rangeType={rangeType}&chartDate={chartDate}&chartWidth={chartWidth}&chartHeight={chartHeight}',
+        url: 'http://faguinaldo-ld/webapi/Preview/Api/V1/PVGraph?email={email}&password={password}&rangeType={rangeType}&chartDate={chartDate}&chartWidth={chartWidth}&chartHeight={chartHeight}&isMobile={isMobile}',
         dataType: 'json',
         type: 'GET',
         cache: false
