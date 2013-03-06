@@ -36,10 +36,10 @@
 
     function getHeight() {
         if (document.documentElement && (document.documentElement.clientWidth || document.documentElement.clientHeight)) {
-            return document.documentElement.clientHeight - 50;
+            return document.documentElement.clientHeight - 100;
         }
         else if (document.body && (document.body.clientWidth || document.body.clientHeight)) {
-            return document.body.clientHeight - 50;
+            return document.body.clientHeight - 100;
         }
 
         // Browser isn't returning its height, pick a reasonable value.
