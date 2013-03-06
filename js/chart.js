@@ -3,7 +3,7 @@
     user = $.cookie('username');
     pass = $.cookie('password');
 
-    if (user.length < 1) {
+    if (user && user.length < 1) {
         window.location.href = "index.html";
     }
 
