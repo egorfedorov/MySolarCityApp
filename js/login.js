@@ -50,7 +50,9 @@
 	                        if ($('#rememberMeCheckbox').prop('checked')) {
 	                            $.cookie('username', e, { expires: 365, path: '/' });
 								//this should be stored somewhere else and encrypted
-	                            $.cookie('password', p, { expires: 365, path: '/' });
+	                            //$.cookie('password', p, { expires: 365, path: '/' });
+								//save for 30 days
+								$.jStorage.set(e, p, {TTL: 30*24*60*60*1000});
 	                        }
 	                        window.location.href = "chart.htm";
 	                    } else {
@@ -62,11 +64,13 @@
 	                }
 	            });
 			} else {
-				//let's load from somewhere, for now let's get it from the cookie and compare
-				var ucookie = $.cookie('username');
-				var pcookie = $.cookie('password');
-				if (ucookie && pcookie && e == ucookie && p == pcookie){
+				//let's load from somewhere, for now let's get it from storage and compare
+				var pass = $.jStorage.get(e);
+				if (e && p && p == pass){
 					window.location.href = "chart.htm";
+				}else{
+					//nothing from storage or doesnt match, lets display the error
+					$('.alert').show();
 				}
 			}
         });

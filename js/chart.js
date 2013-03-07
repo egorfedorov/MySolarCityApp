@@ -90,9 +90,11 @@
 	            data: { email: user, password: pass, rangeType: "Day", chartDate: cc, chartWidth: getWidth(), chartHeight: getHeight(), isMobile: true },
 	            success: function (data, status) {
 	                $('#daySlider ul li:nth-child(60) img').attr('src', 'data:image/png;base64,' + data.imageData);
+					//save to storage
 	            },
 	            error: function (data, status) {
-	                alert('Error fetching chart.  Try again later.');
+	                //alert('Error fetching chart.  Try again later.');
+					//load from storage
 	            }
 	        });			
 		} else {
@@ -112,9 +114,11 @@
 	            data: { email: user, password: pass, rangeType: "Week", chartDate: ww, chartWidth: getWidth(), chartHeight: getHeight(), isMobile: true },
 	            success: function (data, status) {
 	                $('#weekSlider ul li:nth-child(52) img').attr('src', 'data:image/png;base64,' + data.imageData);
+					//save to storage
 	            },
 	            error: function (data, status) {
-	                alert('Error fetching chart.  Try again later.');
+	                //alert('Error fetching chart.  Try again later.');
+					//load from storage
 	            }
 	        });
 		} else {
@@ -131,9 +135,11 @@
 	            data: { email: user, password: pass, rangeType: "Month", chartDate: mm, chartWidth: getWidth(), chartHeight: getHeight(), isMobile: true },
 	            success: function (data, status) {
 	                $('#monthSlider ul li:nth-child(13) img').attr('src', 'data:image/png;base64,' + data.imageData);
+					//save to storage
 	            },
 	            error: function (data, status) {
-	                alert('Error fetching chart.  Try again later.');
+	                //alert('Error fetching chart.  Try again later.');
+					//load from storage
 	            }
 	        });
 		} else {
@@ -150,9 +156,11 @@
 	            data: { email: user, password: pass, rangeType: "Year", chartDate: yy, chartWidth: getWidth(), chartHeight: getHeight(), isMobile: true },
 	            success: function (data, status) {
 	                $('#yearSlider ul li:nth-child(2) img').attr('src', 'data:image/png;base64,' + data.imageData);
+					//save to storage
 	            },
 	            error: function (data, status) {
-	                alert('Error fetching chart.  Try again later.');
+	                //alert('Error fetching chart.  Try again later.');
+					//load from storage
 	            }
 	        });
 		} else {
@@ -181,7 +189,7 @@
         //if next week then we recreate the week slider
         if (Date.compare(lastDate.addWeeks(1).clearTime(), Date.today().clearTime()) >= 0) {
             //its the next week, so we need to reload the slider
-            initializeWeekSlider();
+            initializeWeekSlider(); 
         }
 
         //if next month then we recreate the month slider
@@ -228,6 +236,8 @@
     var currentRangeType = "Day";
     var swipeSliders = new Swipe(document.getElementById('sliders'), { callback: function (e, e1, e2) {
         var cdate = $(e2).find('img').attr('data-chartdate');
+		//TODO: check if cdate is the current date based on the range to see if just need to try
+		//to load from the storage
         var srcloaded = $(e2).find('img').attr('data-srcloaded');
         if (srcloaded == 'false') {
             var rType = $(e2).find('img').attr('data-rangeType');
@@ -236,11 +246,13 @@
                 data: { email: user, password: pass, rangeType: rType, chartDate: cdate, chartWidth: getWidth(), chartHeight: getHeight(), isMobile: true },
                 success: function (data, status) {
                     $(e2).find('img').attr('src', 'data:image/png;base64,' + data.imageData);
+					//its ok to set this to true since we do load the current slides per range
                     $(e2).find('img').attr('srcloaded', 'true');
-
+					//save to storage
                 },
                 error: function (data, status) {
-                    alert('Error fetching chart.  Try again later.');
+                    //alert('Error fetching chart.  Try again later.');
+					//load from storage
                 }
 
             });
