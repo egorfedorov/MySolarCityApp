@@ -58,7 +58,7 @@
 	                    }
 	                },
 	                error: function (data, status) {
-						
+						alert('There was a problem connecting to the server');
 	                }
 	            });
 			} else {
