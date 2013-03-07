@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
 
     user = $.cookie('username');
     pass = $.cookie('password');
@@ -14,14 +14,6 @@
     };
     //lets get the initial status;
     checkOnlineStatus();
-
-    window.addEventListener("offline", function (e) {
-        isOnline = false;
-    }, false);
-
-    window.addEventListener("online", function (e) {
-        isOnline = true;
-    }, false);
 
     function getWidth() {
         if (document.documentElement && (document.documentElement.clientWidth || document.documentElement.clientHeight)) {
@@ -91,110 +83,146 @@
 
     var loadCurrentDay = function (loadDayCallback) {
         var cc = $('#daySlider ul li:nth-child(60) img').attr('data-chartdate');
+		
+		if (isOnline){
+	        amplify.request({
+	            resourceId: 'ajaxGetPVChart',
+	            data: { email: user, password: pass, rangeType: "Day", chartDate: cc, chartWidth: getWidth(), chartHeight: getHeight(), isMobile: true },
+	            success: function (data, status) {
+	                $('#daySlider ul li:nth-child(60) img').attr('src', 'data:image/png;base64,' + data.imageData);
+	            },
+	            error: function (data, status) {
+	                alert('Error fetching chart.  Try again later.');
+	            }
+	        });			
+		} else {
+			//load from storage
+		}
 
-        amplify.request({
-            resourceId: 'ajaxGetPVChart',
-            data: { email: user, password: pass, rangeType: "Day", chartDate: cc, chartWidth: getWidth(), chartHeight: getHeight(), isMobile: true },
-            success: function (data, status) {
-                $('#daySlider ul li:nth-child(60) img').attr('src', 'data:image/png;base64,' + data.imageData);
-            },
-            error: function (data, status) {
-                alert('Error fetching chart.  Try again later.');
-            }
-        });
         //we're loading the dayslider as soon as it's populated.
         if (loadDayCallback != null) { loadDayCallback(); }
     };
 
     var loadCurrentWeek = function () {
         var ww = $('#weekSlider ul li:nth-child(52) img').attr('data-chartdate');
-        amplify.request({
-            resourceId: 'ajaxGetPVChart',
-            data: { email: user, password: pass, rangeType: "Week", chartDate: ww, chartWidth: getWidth(), chartHeight: getHeight(), isMobile: true },
-            success: function (data, status) {
-                $('#weekSlider ul li:nth-child(52) img').attr('src', 'data:image/png;base64,' + data.imageData);
-            },
-            error: function (data, status) {
-                alert('Error fetching chart.  Try again later.');
-            }
-        });
+		
+		if (isOnline){
+	        amplify.request({
+	            resourceId: 'ajaxGetPVChart',
+	            data: { email: user, password: pass, rangeType: "Week", chartDate: ww, chartWidth: getWidth(), chartHeight: getHeight(), isMobile: true },
+	            success: function (data, status) {
+	                $('#weekSlider ul li:nth-child(52) img').attr('src', 'data:image/png;base64,' + data.imageData);
+	            },
+	            error: function (data, status) {
+	                alert('Error fetching chart.  Try again later.');
+	            }
+	        });
+		} else {
+			//load from storage
+		}
     };
 
     var loadCurrentMonth = function () {
         var mm = $('#monthSlider ul li:nth-child(13) img').attr('data-chartdate');
-        amplify.request({
-            resourceId: 'ajaxGetPVChart',
-            data: { email: user, password: pass, rangeType: "Month", chartDate: mm, chartWidth: getWidth(), chartHeight: getHeight(), isMobile: true },
-            success: function (data, status) {
-                $('#monthSlider ul li:nth-child(13) img').attr('src', 'data:image/png;base64,' + data.imageData);
-            },
-            error: function (data, status) {
-                alert('Error fetching chart.  Try again later.');
-            }
-        });
+		
+		if (isOnline){
+	        amplify.request({
+	            resourceId: 'ajaxGetPVChart',
+	            data: { email: user, password: pass, rangeType: "Month", chartDate: mm, chartWidth: getWidth(), chartHeight: getHeight(), isMobile: true },
+	            success: function (data, status) {
+	                $('#monthSlider ul li:nth-child(13) img').attr('src', 'data:image/png;base64,' + data.imageData);
+	            },
+	            error: function (data, status) {
+	                alert('Error fetching chart.  Try again later.');
+	            }
+	        });
+		} else {
+			//load from storage
+		}
     };
 
     var loadCurrentYear = function () {
         var yy = $('#yearSlider ul li:nth-child(2) img').attr('data-chartdate');
-        amplify.request({
-            resourceId: 'ajaxGetPVChart',
-            data: { email: user, password: pass, rangeType: "Year", chartDate: yy, chartWidth: getWidth(), chartHeight: getHeight(), isMobile: true },
-            success: function (data, status) {
-                $('#yearSlider ul li:nth-child(2) img').attr('src', 'data:image/png;base64,' + data.imageData);
-            },
-            error: function (data, status) {
-                alert('Error fetching chart.  Try again later.');
-            }
-        });
+		
+		if (isOnline){
+	        amplify.request({
+	            resourceId: 'ajaxGetPVChart',
+	            data: { email: user, password: pass, rangeType: "Year", chartDate: yy, chartWidth: getWidth(), chartHeight: getHeight(), isMobile: true },
+	            success: function (data, status) {
+	                $('#yearSlider ul li:nth-child(2) img').attr('src', 'data:image/png;base64,' + data.imageData);
+	            },
+	            error: function (data, status) {
+	                alert('Error fetching chart.  Try again later.');
+	            }
+	        });
+		} else {
+			//load from storage
+		}
     };
 
 
     initialize();
-    if (isOnline) {
-        loadCurrentDay(function () {
-            $('#daySlider').show();
-        });
+    
+    loadCurrentDay(function () {
+        $('#daySlider').show();
+    });
+    loadCurrentWeek();
+    loadCurrentMonth();
+    loadCurrentYear();
+    
+	var refreshCurrentValues = function(){
+	
+        //if next day then we recreate the day slider
+        var lastDate = Date.parse($('#daySlider ul li:nth-child(60) img').attr('data-chartdate'));
+        if (Date.compare(lastDate.clearTime(), Date.today().clearTime()) == 1) {
+            //its the next day, so we need to reload the slider
+            initializeSlider();
+        }
+        //if next week then we recreate the week slider
+        if (Date.compare(lastDate.addWeeks(1).clearTime(), Date.today().clearTime()) >= 0) {
+            //its the next week, so we need to reload the slider
+            initializeWeekSlider();
+        }
+
+        //if next month then we recreate the month slider
+        if (Date.compare(lastDate.addMonths(1).clearTime(), Date.today().clearTime()) >= 0) {
+            //its the next month, so we need to reload the slider
+            initializeMonthSlider();
+        }
+
+        //if next year then we recreate the year slider
+        if (Date.compare(lastDate.addYear(1).clearTime(), Date.today().clearTime()) >= 0) {
+            //its the next month, so we need to reload the slider
+            initializeYearSlider();
+        }
+
+        //reload the current charts
+        loadCurrentDay(function () { });
         loadCurrentWeek();
         loadCurrentMonth();
         loadCurrentYear();
-    }
+	};
+	
+	window.addEventListener("offline", function (e) {
+        isOnline = false;
+    }, false);
+
+	var lastRefreshedDate = Date.today();
+    window.addEventListener("online", function (e) {
+        isOnline = true;
+		//let's start refreshing the current graphs since we detected that were online
+		//we need to be able to scope make sure this doesnt get triggered multiple times 
+		if (Date.compare(lastRefreshedDate.addMinutes(10), Date.today()) >= 0) {
+			refreshCurrentValues();
+			lastRefreshedDate = Date.today();
+		}
+    }, false);
+	
     setTimeout(function () {
         if (isOnline) {
-
             //triggers every 15 minutes
-
-            //if next day then we recreate the day slider
-            var lastDate = Date.parse($('#daySlider ul li:nth-child(60) img').attr('data-chartdate'));
-            if (Date.compare(lastDate.clearTime(), Date.today().clearTime()) == 1) {
-                //its the next day, so we need to reload the slider
-                initializeSlider();
-            }
-            //if next week then we recreate the week slider
-            if (Date.compare(lastDate.addWeeks(1).clearTime(), Date.today().clearTime()) >= 0) {
-                //its the next week, so we need to reload the slider
-                initializeWeekSlider();
-            }
-
-            //if next month then we recreate the month slider
-            if (Date.compare(lastDate.addMonths(1).clearTime(), Date.today().clearTime()) >= 0) {
-                //its the next month, so we need to reload the slider
-                initializeMonthSlider();
-            }
-
-            //if next year then we recreate the year slider
-            if (Date.compare(lastDate.addYear(1).clearTime(), Date.today().clearTime()) >= 0) {
-                //its the next month, so we need to reload the slider
-                initializeYearSlider();
-            }
-
-            //reload the current charts
-            loadCurrentDay(function () { });
-            loadCurrentWeek();
-            loadCurrentMonth();
-            loadCurrentYear();
-
+			refreshCurrentValues();
         }
-
     }, (15 * 60 * 1000));
 
     var currentRangeType = "Day";

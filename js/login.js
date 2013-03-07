@@ -1,4 +1,4 @@
-﻿/// <reference path="vendor/require.js" />
+/// <reference path="vendor/require.js" />
 /// <reference path="vendor/amplify.min.js" /
 
 (function () {
@@ -11,6 +11,23 @@
                 return false
             }
         }
+		
+		//checking if device is online or offline
+	    var isOnline = false;
+	    function checkOnlineStatus() {
+	        isOnline = window.navigator.onLine;
+	    };
+	    //lets get the initial status;
+	    checkOnlineStatus();
+
+	    window.addEventListener("offline", function (e) {
+	        isOnline = false;
+	    }, false);
+
+	    window.addEventListener("online", function (e) {
+	        isOnline = true;
+	    }, false);
+		
         $('.alert').hide();
         $('#inputEmail').focus(function () {
             $('.alert').hide();
@@ -20,29 +37,38 @@
         if (emailInCookie) {
             $('#inputEmail').val(emailInCookie);
         }
-        $('#loginButton').click(function () {
-            var e = $('#inputEmail').val();
-            var p = $('#inputPassword').val();
-            var myRequest = amplify.request({
-                resourceId: 'ajaxLogin',
-                data: { "email": e, "password": p },
-                success: function (data, status) {
-                    if (data == true) {
-                        $('#dismissAlert').trigger('click');
-                        if ($('#rememberMeCheckbox').prop('checked')) {
-                            $.cookie('username', e, { expires: 365, path: '/' });
-                            $.cookie('password', p, { expires: 365, path: '/' });
-                        }
-                        window.location.href = "chart.htm";
-                    } else {
-                        $('.alert').show();
-                    }
-                },
-                error: function (data, status) {
-
-                }
-
-            });
+        $('#loginButton').click(function () {	
+			var e = $('#inputEmail').val();
+	        var p = $('#inputPassword').val();
+			if (isOnline) {
+	            var myRequest = amplify.request({
+	                resourceId: 'ajaxLogin',
+	                data: { "email": e, "password": p },
+	                success: function (data, status) {
+	                    if (data == true) {
+	                        $('#dismissAlert').trigger('click');
+	                        if ($('#rememberMeCheckbox').prop('checked')) {
+	                            $.cookie('username', e, { expires: 365, path: '/' });
+								//this should be stored somewhere else and encrypted
+	                            $.cookie('password', p, { expires: 365, path: '/' });
+	                        }
+	                        window.location.href = "chart.htm";
+	                    } else {
+	                        $('.alert').show();
+	                    }
+	                },
+	                error: function (data, status) {
+						
+	                }
+	            });
+			} else {
+				//let's load from somewhere, for now let's get it from the cookie and compare
+				var ucookie = $.cookie('username');
+				var pcookie = $.cookie('password');
+				if (ucookie && pcookie && e == ucookie && p == pcookie){
+					window.location.href = "chart.htm";
+				}
+			}
         });
     });
 })();
